@@ -10,6 +10,7 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private float speed;
 
     private Rigidbody rb;
+    
 
     float xInput;
     float zInput;
@@ -27,13 +28,21 @@ public class PlayerBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MyInput();
+        MyInput();   
     }
 
   
 
     private void FixedUpdate()
     {
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+
+        if (Physics.Raycast(mouseRay,out RaycastHit hit,Mathf.Infinity))
+        {
+            Vector3 dir = (transform.position - hit.point).normalized;
+            transform.rotation = Quaternion.LookRotation(dir);
+        }
         rb.AddForce(new Vector3(xInput * speed * Time.fixedDeltaTime, 0, -zInput * speed * Time.fixedDeltaTime),ForceMode.Force);
     }
 
