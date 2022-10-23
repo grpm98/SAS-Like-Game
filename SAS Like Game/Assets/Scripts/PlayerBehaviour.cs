@@ -5,15 +5,20 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    [Header("Movement Settings")]
+
     [SerializeField] private Transform playerTransform;
-
     [SerializeField] private float speed;
-
     private Rigidbody rb;
-    
+    private float xInput;
+    private float zInput;
 
-    float xInput;
-    float zInput;
+    [Header("Attack Settings")]
+
+    [SerializeField] private float cooldown;
+    [SerializeField] private Transform barrelPos;
+    [SerializeField] private GameObject bullet;
+
 
     private void Awake()
     {
@@ -41,7 +46,7 @@ public class PlayerBehaviour : MonoBehaviour
         if (Physics.Raycast(mouseRay,out RaycastHit hit,Mathf.Infinity))
         {
             Vector3 dir = (transform.position - hit.point).normalized;
-            transform.rotation = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.LookRotation(new Vector3(dir.x,0, dir.z));
         }
         rb.AddForce(new Vector3(xInput * speed * Time.fixedDeltaTime, 0, -zInput * speed * Time.fixedDeltaTime),ForceMode.Force);
     }
@@ -50,5 +55,16 @@ public class PlayerBehaviour : MonoBehaviour
     {
         zInput = Input.GetAxisRaw("Horizontal");
         xInput = Input.GetAxisRaw("Vertical");
+
+        if (cooldown <= 0 && Input.GetMouseButton(0))
+        {
+            Attack();
+        }
+
+    }
+
+    private void Attack()
+    {
+        Instantiate(bullet,barrelPos.position,barrelPos.rotation);
     }
 }
