@@ -46,7 +46,7 @@ public class PlayerBehaviour : MonoBehaviour
         Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         
 
-        if (Physics.Raycast(mouseRay,out RaycastHit hit,Mathf.Infinity))
+        if (Physics.Raycast(mouseRay,out RaycastHit hit,Mathf.Infinity) & hit.transform.tag == "Terrain")
         {
             Vector3 dir = (transform.position - hit.point).normalized;
             transform.rotation = Quaternion.LookRotation(new Vector3(dir.x,0, dir.z));
