@@ -16,8 +16,11 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Attack Settings")]
 
     [SerializeField] private float cooldown;
+    [SerializeField] private float curTimer;
     [SerializeField] private Transform barrelPos;
-    [SerializeField] private GameObject bullet;
+    [SerializeField] private Rigidbody bulletPrefab;
+    [SerializeField] private float bulletSpeed;
+
 
 
     private void Awake()
@@ -27,16 +30,16 @@ public class PlayerBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        curTimer = cooldown;
     }
 
     // Update is called once per frame
     void Update()
     {
-        MyInput();   
+        MyInput();
+        Timer();
     }
 
-  
 
     private void FixedUpdate()
     {
@@ -48,7 +51,7 @@ public class PlayerBehaviour : MonoBehaviour
             Vector3 dir = (transform.position - hit.point).normalized;
             transform.rotation = Quaternion.LookRotation(new Vector3(dir.x,0, dir.z));
         }
-        rb.AddForce(new Vector3(xInput * speed * Time.fixedDeltaTime, 0, -zInput * speed * Time.fixedDeltaTime),ForceMode.Force);
+        rb.velocity = new Vector3(xInput, 0, -zInput ).normalized * speed * Time.fixedDeltaTime;
     }
 
     private void MyInput()
@@ -56,15 +59,23 @@ public class PlayerBehaviour : MonoBehaviour
         zInput = Input.GetAxisRaw("Horizontal");
         xInput = Input.GetAxisRaw("Vertical");
 
-        if (cooldown <= 0 && Input.GetMouseButton(0))
+        if (curTimer <= 0 & Input.GetButton("Fire1"))
         {
+            Debug.Log("Running");
             Attack();
         }
 
     }
 
+    private void Timer()
+    {
+        curTimer -= Time.deltaTime;
+    }
     private void Attack()
     {
-        Instantiate(bullet,barrelPos.position,barrelPos.rotation);
+        Rigidbody bullet;
+        bullet = Instantiate(bulletPrefab,barrelPos.position,barrelPos.rotation);
+        bullet.AddForce(bullet.transform.TransformDirection(Vector3.forward * bulletSpeed));
+        curTimer = cooldown;
     }
 }
